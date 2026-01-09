@@ -136,9 +136,9 @@ def create_winners_by_decile_chart() -> go.Figure:
         row_heights=[0.1, 0.9],
     )
 
-    # Colors matching app-v2 WinnersLosersIncomeDecileSubPage.tsx
-    COLOR_GAIN_MORE = PRIMARY_700  # Dark teal
-    COLOR_GAIN_LESS = PRIMARY_ALPHA_60  # Semi-transparent teal
+    # Colors for winners/losers chart
+    COLOR_GAIN_MORE = PRIMARY_700  # Dark teal for gains >5%
+    COLOR_GAIN_LESS = PRIMARY_500  # Main teal for gains <5% (same as Figure 3)
     COLOR_NO_CHANGE = GRAY_200  # Light gray
     COLOR_LOSS_LESS = GRAY_400  # Medium gray
     COLOR_LOSS_MORE = GRAY_600  # Dark gray
