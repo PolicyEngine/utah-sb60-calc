@@ -22,3 +22,6 @@ wheels/
 .venv
 env/
 venv/
+
+# Generated output
+output/
