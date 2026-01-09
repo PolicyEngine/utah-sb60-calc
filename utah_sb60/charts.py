@@ -184,18 +184,18 @@ def create_winners_by_decile_chart() -> go.Figure:
             automargin=True,
         ),
         legend=dict(
-            title=dict(text="Change in income<br />"),
+            title=dict(text=""),
             orientation="h",
             yanchor="bottom",
-            y=1.02,
+            y=1.08,
             xanchor="center",
             x=0.5,
             traceorder="normal",
-            font=dict(size=11),
+            font=dict(size=10),
         ),
         font_color=BLACK,
-        margin={"l": 60, "r": 60, "b": 100, "t": 100, "pad": 4},
-        height=550,
+        margin={"l": 60, "r": 60, "b": 100, "t": 120, "pad": 4},
+        height=580,
         width=800,
         uniformtext=dict(
             mode="hide",
@@ -205,7 +205,7 @@ def create_winners_by_decile_chart() -> go.Figure:
             {
                 **WATERMARK_CONFIG,
                 "x": 1.05,
-                "y": -0.16,
+                "y": -0.20,
             }
         ],
     )
