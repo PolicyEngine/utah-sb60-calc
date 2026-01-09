@@ -225,13 +225,13 @@ def _add_stacked_bar_traces(
     show_legend: bool,
 ) -> None:
     """Add stacked bar traces to a figure."""
-    # Categories matching app-v2 legend labels
+    # Categories with shortened legend labels
     categories = [
-        ("Gain more than 5%", "Gain more than 5%", color_gain_more, None),
-        ("Gain less than 5%", "Gain less than 5%", color_gain_less, BLACK),
+        ("Gain more than 5%", "Gain >5%", color_gain_more, None),
+        ("Gain less than 5%", "Gain <5%", color_gain_less, BLACK),
         ("No change", "No change", color_no_change, BLACK),
-        ("Lose less than 5%", "Loss less than 5%", color_loss_less, None),
-        ("Lose more than 5%", "Loss more than 5%", color_loss_more, None),
+        ("Lose less than 5%", "Loss <5%", color_loss_less, None),
+        ("Lose more than 5%", "Loss >5%", color_loss_more, None),
     ]
 
     for col_name, legend_name, color, text_color in categories:
