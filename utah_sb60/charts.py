@@ -21,13 +21,18 @@ from .statewide import (
     AVG_IMPACT_BY_DECILE,
 )
 
-# PolicyEngine app-v2 color palette (teal-based)
+# PolicyEngine app-v2 color palette - matching WinnersLosersIncomeDecileSubPage.tsx
 BLACK = "#000000"
-PRIMARY_TEAL = "#319795"  # colors.primary[500] - main brand color
-PRIMARY_TEAL_LIGHT = "#E6FFFA"  # colors.primary[50] - light teal backgrounds
-GRAY_600 = "#4B5563"  # Negative/losses
-GRAY_300 = "#D1D5DB"  # Neutral/no change
-GRAY_400 = "#9CA3AF"  # Secondary gray
+
+# Primary teal colors
+PRIMARY_500 = "#319795"  # colors.primary[500] - main brand color
+PRIMARY_700 = "#285E61"  # colors.primary[700] - dark teal for gains >5%
+PRIMARY_ALPHA_60 = "rgba(49, 151, 149, 0.6)"  # colors.primary.alpha[60] - for gains <5%
+
+# Gray scale
+GRAY_200 = "#E5E7EB"  # colors.gray[200] - no change
+GRAY_400 = "#9CA3AF"  # colors.gray[400] - loss <5%
+GRAY_600 = "#4B5563"  # colors.gray[600] - loss >5%
 
 # Chart watermark configuration
 WATERMARK_CONFIG = {
@@ -61,16 +66,23 @@ def create_net_income_change_chart() -> go.Figure:
         df,
         x="Employment Income",
         y="Change in net income",
-        color_discrete_sequence=[PRIMARY_TEAL],
+        color_discrete_sequence=[PRIMARY_500],
         title="Figure 1: Change in net income for a single adult",
     ).update_layout(
         font=dict(family="Roboto Serif"),
-        xaxis_title="Employment income ($)",
-        yaxis_title="Change in net income ($)",
-        xaxis_tickformat=",",
-        yaxis_tickformat=",",
+        xaxis=dict(
+            title=dict(text="Employment income ($)"),
+            tickformat=",",
+            fixedrange=True,
+        ),
+        yaxis=dict(
+            title=dict(text="Change in net income ($)"),
+            tickformat=",",
+            fixedrange=True,
+        ),
         font_color=BLACK,
         margin={"l": 60, "r": 60, "b": 80, "t": 80, "pad": 4},
+        showlegend=False,
         images=[
             {
                 **WATERMARK_CONFIG,
@@ -100,8 +112,8 @@ def create_winners_by_decile_chart() -> go.Figure:
             "Gain more than 5%": GAIN_MORE_THAN_5PCT,
             "Gain less than 5%": GAIN_LESS_THAN_5PCT,
             "No change": NO_CHANGE,
-            "Loss less than 5%": LOSS_LESS_THAN_5PCT,
-            "Loss more than 5%": LOSS_MORE_THAN_5PCT,
+            "Lose less than 5%": LOSS_LESS_THAN_5PCT,
+            "Lose more than 5%": LOSS_MORE_THAN_5PCT,
         }
     )
 
@@ -111,8 +123,8 @@ def create_winners_by_decile_chart() -> go.Figure:
             "Gain more than 5%": [ALL_GAIN_MORE_THAN_5PCT],
             "Gain less than 5%": [ALL_GAIN_LESS_THAN_5PCT],
             "No change": [ALL_NO_CHANGE],
-            "Loss less than 5%": [ALL_LOSS_LESS_THAN_5PCT],
-            "Loss more than 5%": [ALL_LOSS_MORE_THAN_5PCT],
+            "Lose less than 5%": [ALL_LOSS_LESS_THAN_5PCT],
+            "Lose more than 5%": [ALL_LOSS_MORE_THAN_5PCT],
         }
     )
 
@@ -124,12 +136,12 @@ def create_winners_by_decile_chart() -> go.Figure:
         row_heights=[0.1, 0.9],
     )
 
-    # Colors
-    COLOR_GAIN_MORE = PRIMARY_TEAL
-    COLOR_GAIN_LESS = PRIMARY_TEAL_LIGHT
-    COLOR_NO_CHANGE = GRAY_300
-    COLOR_LOSS_LESS = GRAY_400
-    COLOR_LOSS_MORE = GRAY_600
+    # Colors matching app-v2 WinnersLosersIncomeDecileSubPage.tsx
+    COLOR_GAIN_MORE = PRIMARY_700  # Dark teal
+    COLOR_GAIN_LESS = PRIMARY_ALPHA_60  # Semi-transparent teal
+    COLOR_NO_CHANGE = GRAY_200  # Light gray
+    COLOR_LOSS_LESS = GRAY_400  # Medium gray
+    COLOR_LOSS_MORE = GRAY_600  # Dark gray
 
     # Add traces for "All" category - first row
     _add_stacked_bar_traces(
@@ -149,17 +161,30 @@ def create_winners_by_decile_chart() -> go.Figure:
         barmode="stack",
         title=dict(text="Figure 2: Winners of Utah SB60 by income decile", x=0),
         font=dict(family="Roboto Serif"),
-        xaxis=dict(title="", ticksuffix="%", range=[0, 100]),
-        xaxis2=dict(
-            title=dict(text="Population share", standoff=20),
+        xaxis=dict(
+            title=dict(text=""),
             ticksuffix="%",
             range=[0, 100],
+            showgrid=False,
+            showticklabels=False,
+            fixedrange=True,
+        ),
+        xaxis2=dict(
+            title=dict(text="Population share"),
+            ticksuffix="%",
+            range=[0, 100],
+            fixedrange=True,
+        ),
+        yaxis=dict(
+            title=dict(text=""),
+            tickvals=["All"],
         ),
         yaxis2=dict(
-            title=dict(text="Income decile", standoff=15),
+            title=dict(text="Income decile"),
             automargin=True,
         ),
         legend=dict(
+            title=dict(text="Change in income<br />"),
             orientation="h",
             yanchor="bottom",
             y=1.02,
@@ -169,9 +194,13 @@ def create_winners_by_decile_chart() -> go.Figure:
             font=dict(size=11),
         ),
         font_color=BLACK,
-        margin={"l": 60, "r": 60, "b": 80, "t": 100, "pad": 4},
+        margin={"l": 60, "r": 60, "b": 100, "t": 100, "pad": 4},
         height=550,
         width=800,
+        uniformtext=dict(
+            mode="hide",
+            minsize=8,
+        ),
         images=[
             {
                 **WATERMARK_CONFIG,
@@ -196,12 +225,13 @@ def _add_stacked_bar_traces(
     show_legend: bool,
 ) -> None:
     """Add stacked bar traces to a figure."""
+    # Categories matching app-v2 legend labels
     categories = [
-        ("Gain more than 5%", "Gain >5%", color_gain_more, None),
-        ("Gain less than 5%", "Gain <5%", color_gain_less, BLACK),
+        ("Gain more than 5%", "Gain more than 5%", color_gain_more, None),
+        ("Gain less than 5%", "Gain less than 5%", color_gain_less, BLACK),
         ("No change", "No change", color_no_change, BLACK),
-        ("Loss less than 5%", "Loss <5%", color_loss_less, None),
-        ("Loss more than 5%", "Loss >5%", color_loss_more, None),
+        ("Lose less than 5%", "Loss less than 5%", color_loss_less, None),
+        ("Lose more than 5%", "Loss more than 5%", color_loss_more, None),
     ]
 
     for col_name, legend_name, color, text_color in categories:
@@ -216,11 +246,12 @@ def _add_stacked_bar_traces(
                 name=legend_name,
                 orientation="h",
                 marker_color=color,
-                text=[f"{x}%" if x > 0 else "" for x in df[col_name]],
+                text=[f"{x:.0f}%" if x > 0 else "" for x in df[col_name]],
                 textposition="inside",
+                textangle=0,
                 legendgroup=col_name.lower().replace(" ", "_"),
                 showlegend=show_legend,
-                hovertemplate="%{x}%<extra></extra>",
+                hovertemplate="%{x:.1f}%<extra></extra>",
                 **text_kwargs,
             ),
             row=row,
@@ -250,15 +281,21 @@ def create_avg_benefit_by_decile_chart() -> go.Figure:
             x="Income decile",
             y="Average impact",
             text=dollar_text,
-            color_discrete_sequence=[PRIMARY_TEAL],
+            color_discrete_sequence=[PRIMARY_500],
             title="Figure 3: Average benefit of Utah SB60 by income decile",
         )
         .update_layout(
             font=dict(family="Roboto Serif"),
-            xaxis_title="Income decile",
-            yaxis_title="Average impact ($)",
-            xaxis_tickvals=list(range(1, 11)),
-            yaxis_tickformat=",",
+            xaxis=dict(
+                title=dict(text="Income decile"),
+                tickvals=list(range(1, 11)),
+                fixedrange=True,
+            ),
+            yaxis=dict(
+                title=dict(text="Average impact ($)"),
+                tickformat=",",
+                fixedrange=True,
+            ),
             showlegend=False,
             font_color=BLACK,
             margin={"l": 60, "r": 60, "b": 80, "t": 80, "pad": 4},
