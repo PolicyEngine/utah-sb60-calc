@@ -292,7 +292,7 @@ def create_avg_benefit_by_decile_chart() -> go.Figure:
                 fixedrange=True,
             ),
             yaxis=dict(
-                title=dict(text="Average impact ($)"),
+                title=dict(text="Absolute change in household income ($)"),
                 tickformat=",",
                 fixedrange=True,
             ),
