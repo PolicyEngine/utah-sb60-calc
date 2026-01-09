@@ -27,7 +27,7 @@ BLACK = "#000000"
 # Primary teal colors
 PRIMARY_500 = "#319795"  # colors.primary[500] - main brand color
 PRIMARY_700 = "#285E61"  # colors.primary[700] - dark teal for gains >5%
-PRIMARY_ALPHA_60 = "rgba(49, 151, 149, 0.6)"  # colors.primary.alpha[60] - for gains <5%
+PRIMARY_ALPHA_60 = "rgba(49, 151, 149, 0.6)"  # colors.primary.alpha[60] - teal with 60% opacity
 
 # Gray scale
 GRAY_200 = "#E5E7EB"  # colors.gray[200] - no change
@@ -136,9 +136,9 @@ def create_winners_by_decile_chart() -> go.Figure:
         row_heights=[0.1, 0.9],
     )
 
-    # Colors for winners/losers chart
-    COLOR_GAIN_MORE = PRIMARY_700  # Dark teal for gains >5%
-    COLOR_GAIN_LESS = PRIMARY_500  # Main teal for gains <5% (same as Figure 3)
+    # Colors matching app-v2 WinnersLosersIncomeDecileSubPage.tsx
+    COLOR_GAIN_MORE = PRIMARY_700  # Dark teal (#285E61)
+    COLOR_GAIN_LESS = PRIMARY_ALPHA_60  # Teal with 60% opacity (#31979599)
     COLOR_NO_CHANGE = GRAY_200  # Light gray
     COLOR_LOSS_LESS = GRAY_400  # Medium gray
     COLOR_LOSS_MORE = GRAY_600  # Dark gray
