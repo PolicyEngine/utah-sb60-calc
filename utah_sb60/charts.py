@@ -71,13 +71,15 @@ def create_net_income_change_chart() -> go.Figure:
     ).update_layout(
         font=dict(family="Roboto Serif"),
         xaxis=dict(
-            title=dict(text="Employment income ($)"),
+            title=dict(text="Employment income"),
             tickformat=",",
+            tickprefix="$",
             fixedrange=True,
         ),
         yaxis=dict(
-            title=dict(text="Change in net income ($)"),
+            title=dict(text="Change in net income"),
             tickformat=",",
+            tickprefix="$",
             fixedrange=True,
         ),
         font_color=BLACK,
