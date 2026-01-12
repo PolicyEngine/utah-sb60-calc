@@ -3,8 +3,8 @@
 Generate blog post assets for Utah SB60 analysis.
 
 This script generates:
-1. A markdown file with iframe embeds for charts
-2. Standalone HTML files for each Plotly chart
+1. A markdown file with iframe embeds pointing to GitHub Pages
+2. Standalone HTML files for each Plotly chart (deployed via GitHub Pages)
 
 Output:
     output/
@@ -14,10 +14,11 @@ Output:
         ├── winners-by-decile.html
         └── avg-benefit-by-decile.html
 
-Copy to policyengine-app-v2:
-    - output/*.md → app/src/data/posts/articles/
-    - output/charts/*.html → app/public/charts/utah-sb60-income-tax-reduction/
+Charts are deployed to GitHub Pages and embedded via iframe in policyengine-app-v2.
 """
+
+# GitHub Pages base URL for chart embeds
+GITHUB_PAGES_BASE_URL = "https://policyengine.github.io/utah-sb60-calc"
 
 import os
 from utah_sb60 import (
@@ -129,7 +130,7 @@ Unlike the [2025 tax package](https://www.policyengine.org/us/research/utah-inco
 
 Let's examine how SB60 affects a single adult's net income in Utah. Due to interactions with the Utah taxpayer credit, this household does not benefit with earnings below $20,500. Above this threshold, the taxpayer credit begins to phase out, and tax savings become proportional to earnings. For example, [at $80,000 of earnings](https://app.policyengine.org/us/report-output/sur-mk70207zzf9k), the single adult would see their Utah income tax liability decrease by $40. Figure 1 displays the change in net income for a single adult as earnings rise.
 
-<iframe src="/charts/utah-sb60-income-tax-reduction/net-income-change.html" width="100%" height="650" frameborder="0"></iframe>
+<iframe src="{GITHUB_PAGES_BASE_URL}/net-income-change.html" width="100%" height="650" frameborder="0"></iframe>
 
 ## Statewide impacts
 
@@ -137,11 +138,11 @@ For tax year 2026, SB60 would reduce state revenues by ${abs(REVENUE_IMPACT_MILL
 
 The tax cut would raise the net income of {PERCENT_BENEFITING}% of residents in Utah. The percentage of residents in each income decile who are net beneficiaries varies, with residents in higher-income deciles more likely to benefit since they have greater taxable income.
 
-<iframe src="/charts/utah-sb60-income-tax-reduction/winners-by-decile.html" width="100%" height="650" frameborder="0"></iframe>
+<iframe src="{GITHUB_PAGES_BASE_URL}/winners-by-decile.html" width="100%" height="650" frameborder="0"></iframe>
 
 SB60 would provide an average benefit of ${AVG_BENEFIT_PER_HOUSEHOLD} per household, ranging from ${AVG_IMPACT_BY_DECILE[0]} in the bottom income decile to ${AVG_IMPACT_BY_DECILE[-1]} in the top decile.
 
-<iframe src="/charts/utah-sb60-income-tax-reduction/avg-benefit-by-decile.html" width="100%" height="650" frameborder="0"></iframe>
+<iframe src="{GITHUB_PAGES_BASE_URL}/avg-benefit-by-decile.html" width="100%" height="650" frameborder="0"></iframe>
 
 We project that SB60 would have no effect on poverty or deep poverty while raising the state's Gini index of inequality by {GINI_IMPACT_PCT}%.
 
@@ -159,12 +160,10 @@ with open("output/utah-sb60-income-tax-reduction.md", "w") as f:
 print("Generated output/utah-sb60-income-tax-reduction.md")
 
 print("\n" + "="*60)
-print("Done! Copy files to policyengine-app-v2:")
+print("Done!")
 print("="*60)
-print("\n1. Markdown file:")
+print("\nCharts will be deployed to GitHub Pages automatically on push.")
+print(f"Chart URLs: {GITHUB_PAGES_BASE_URL}/<chart-name>.html")
+print("\nTo update policyengine-app-v2, copy the markdown file:")
 print("   cp output/utah-sb60-income-tax-reduction.md \\")
 print("      ../policyengine-app-v2/app/src/data/posts/articles/")
-print("\n2. Chart HTML files:")
-print("   mkdir -p ../policyengine-app-v2/app/public/charts/utah-sb60-income-tax-reduction")
-print("   cp output/charts/*.html \\")
-print("      ../policyengine-app-v2/app/public/charts/utah-sb60-income-tax-reduction/")
