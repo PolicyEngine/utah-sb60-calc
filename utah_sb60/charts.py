@@ -36,7 +36,7 @@ GRAY_600 = "#4B5563"  # colors.gray[600] - loss >5%
 
 # Chart watermark configuration
 WATERMARK_CONFIG = {
-    "source": "https://policyengine.github.io/utah-sb60-calc/assets/teal-square.png",
+    "source": "https://policyengine.github.io/utah-sb60-calc/assets/teal-square-transparent.png",
     "xref": "paper",
     "yref": "paper",
     "sizex": 0.07,
