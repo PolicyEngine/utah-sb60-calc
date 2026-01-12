@@ -77,13 +77,13 @@ CHART_HTML_TEMPLATE = """<html>
 
 def generate_chart_html(fig, filename):
     """Generate a standalone HTML file for a Plotly figure."""
-    # Get data and layout from figure
-    fig_dict = fig.to_dict()
-
-    # Convert to JSON strings for embedding
     import json
-    data_json = json.dumps(fig_dict['data'])
-    layout_json = json.dumps(fig_dict['layout'])
+    import plotly.io as pio
+
+    # Use Plotly's JSON serialization which handles numpy arrays
+    fig_json = json.loads(pio.to_json(fig))
+    data_json = json.dumps(fig_json['data'])
+    layout_json = json.dumps(fig_json['layout'])
 
     html = CHART_HTML_TEMPLATE.format(
         chart_data=data_json,
