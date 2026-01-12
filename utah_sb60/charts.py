@@ -36,7 +36,7 @@ GRAY_600 = "#4B5563"  # colors.gray[600] - loss >5%
 
 # Chart watermark configuration
 WATERMARK_CONFIG = {
-    "source": "/assets/logos/policyengine/teal-square-transparent.png",
+    "source": "https://policyengine.org/assets/logos/policyengine/teal-square.png",
     "xref": "paper",
     "yref": "paper",
     "sizex": 0.07,
