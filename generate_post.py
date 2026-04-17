@@ -43,6 +43,13 @@ CHART_HTML_TEMPLATE = """<html>
       href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
       rel="stylesheet"
     />
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-91M4529HE7"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){{dataLayer.push(arguments);}}
+      gtag('js', new Date());
+      gtag('config', 'G-91M4529HE7', {{ tool_name: 'utah-sb60-calc' }});
+    </script>
   </head>
   <body>
     <div>
