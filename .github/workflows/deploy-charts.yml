@@ -38,6 +38,8 @@ jobs:
           mkdir -p _site
           cp -r output/charts/* _site/
           cp -r assets _site/
+          cp output/robots.txt _site/
+          cp output/sitemap.xml _site/
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

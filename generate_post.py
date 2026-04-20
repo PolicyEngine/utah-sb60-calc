@@ -35,10 +35,96 @@ from utah_sb60 import (
 # Create output directories
 os.makedirs("output/charts", exist_ok=True)
 
-# Chart HTML template (matching California billionaire tax pattern)
-CHART_HTML_TEMPLATE = """<html>
+# Chart metadata for SEO (title, description per chart)
+CHART_SEO_METADATA = {
+    "net-income-change.html": {
+        "title": "Utah SB60: Change in Net Income for a Single Adult | PolicyEngine",
+        "description": (
+            "Interactive chart showing how Utah SB60's income tax rate reduction "
+            "from 4.5% to 4.45% affects net income for a single adult across "
+            "different earnings levels."
+        ),
+        "chart_label": (
+            "Line chart showing the change in net income for a single adult "
+            "under Utah SB60 across employment income levels from $0 to $200,000"
+        ),
+    },
+    "winners-by-decile.html": {
+        "title": "Utah SB60: Winners by Income Decile | PolicyEngine",
+        "description": (
+            "Interactive chart showing the share of Utah residents who benefit "
+            "from SB60's income tax reduction, broken down by income decile."
+        ),
+        "chart_label": (
+            "Stacked bar chart showing the percentage of Utah residents in each "
+            "income decile who gain or lose from SB60"
+        ),
+    },
+    "avg-benefit-by-decile.html": {
+        "title": "Utah SB60: Average Benefit by Income Decile | PolicyEngine",
+        "description": (
+            "Interactive chart showing the average household benefit from "
+            "Utah SB60's income tax reduction by income decile, ranging from "
+            "$5 to $583."
+        ),
+        "chart_label": (
+            "Bar chart showing the average household income change under Utah "
+            "SB60 for each income decile"
+        ),
+    },
+}
+
+# Chart HTML template with SEO improvements
+CHART_HTML_TEMPLATE = """<!DOCTYPE html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{chart_title}</title>
+    <meta name="description" content="{chart_description}" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="{chart_canonical_url}" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="{chart_title}" />
+    <meta property="og:description" content="{chart_description}" />
+    <meta property="og:url" content="{chart_canonical_url}" />
+    <meta property="og:site_name" content="PolicyEngine" />
+    <meta property="og:image" content="{base_url}/assets/teal-square.png" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="{chart_title}" />
+    <meta name="twitter:description" content="{chart_description}" />
+    <meta name="twitter:image" content="{base_url}/assets/teal-square.png" />
+
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {{
+      "@context": "https://schema.org",
+      "@type": "Dataset",
+      "name": "{chart_title}",
+      "description": "{chart_description}",
+      "url": "{chart_canonical_url}",
+      "creator": {{
+        "@type": "Organization",
+        "name": "PolicyEngine",
+        "url": "https://policyengine.org"
+      }},
+      "license": "https://opensource.org/licenses/MIT",
+      "isPartOf": {{
+        "@type": "WebSite",
+        "name": "PolicyEngine",
+        "url": "https://policyengine.org"
+      }}
+    }}
+    </script>
+
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://cdn.plot.ly" />
     <link
       href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
       rel="stylesheet"
@@ -94,7 +180,7 @@ CHART_HTML_TEMPLATE = """<html>
     </script>
   </head>
   <body>
-    <div>
+    <main>
       <script type="text/javascript">
         window.PlotlyConfig = {{ MathJaxConfig: 'local' }};
       </script>
@@ -106,6 +192,8 @@ CHART_HTML_TEMPLATE = """<html>
         id="chart"
         class="plotly-graph-div"
         style="height: 600px; width: 100%"
+        role="img"
+        aria-label="{chart_aria_label}"
       ></div>
       <script type="text/javascript">
         window.PLOTLYENV = window.PLOTLYENV || {{}};
@@ -118,7 +206,7 @@ CHART_HTML_TEMPLATE = """<html>
           );
         }}
       </script>
-    </div>
+    </main>
   </body>
 </html>
 """
@@ -134,9 +222,21 @@ def generate_chart_html(fig, filename):
     data_json = json.dumps(fig_json['data'])
     layout_json = json.dumps(fig_json['layout'])
 
+    # Get SEO metadata for this chart
+    seo = CHART_SEO_METADATA.get(filename, {})
+    chart_title = seo.get("title", f"Utah SB60 Chart | PolicyEngine")
+    chart_description = seo.get("description", "Utah SB60 income tax analysis chart by PolicyEngine.")
+    chart_aria_label = seo.get("chart_label", "Interactive chart from PolicyEngine Utah SB60 analysis")
+    chart_canonical_url = f"{GITHUB_PAGES_BASE_URL}/{filename}"
+
     html = CHART_HTML_TEMPLATE.format(
         chart_data=data_json,
-        chart_layout=layout_json
+        chart_layout=layout_json,
+        chart_title=chart_title,
+        chart_description=chart_description,
+        chart_aria_label=chart_aria_label,
+        chart_canonical_url=chart_canonical_url,
+        base_url=GITHUB_PAGES_BASE_URL,
     )
 
     filepath = f"output/charts/{filename}"
@@ -179,7 +279,7 @@ Unlike the [2025 tax package](https://www.policyengine.org/us/research/utah-inco
 
 Let's examine how SB60 affects a single adult's net income in Utah. Due to interactions with the Utah taxpayer credit, this household does not benefit with earnings below $20,500. Above this threshold, the taxpayer credit begins to phase out, and tax savings become proportional to earnings. For example, [at $80,000 of earnings](https://app.policyengine.org/us/report-output/sur-mk70207zzf9k), the single adult would see their Utah income tax liability decrease by $40. Figure 1 displays the change in net income for a single adult as earnings rise.
 
-<iframe src="{GITHUB_PAGES_BASE_URL}/net-income-change.html" width="100%" height="650" frameborder="0"></iframe>
+<iframe src="{GITHUB_PAGES_BASE_URL}/net-income-change.html" title="Figure 1: Change in net income for a single adult under Utah SB60" width="100%" height="650" frameborder="0"></iframe>
 
 ## Statewide impacts
 
@@ -187,11 +287,11 @@ For tax year 2026, SB60 would reduce state revenues by ${abs(REVENUE_IMPACT_MILL
 
 The tax cut would raise the net income of {PERCENT_BENEFITING}% of residents in Utah. The percentage of residents in each income decile who are net beneficiaries varies, with residents in higher-income deciles more likely to benefit since they have greater taxable income.
 
-<iframe src="{GITHUB_PAGES_BASE_URL}/winners-by-decile.html" width="100%" height="650" frameborder="0"></iframe>
+<iframe src="{GITHUB_PAGES_BASE_URL}/winners-by-decile.html" title="Figure 2: Winners of Utah SB60 by income decile" width="100%" height="650" frameborder="0"></iframe>
 
 SB60 would provide an average benefit of ${AVG_BENEFIT_PER_HOUSEHOLD} per household, ranging from ${AVG_IMPACT_BY_DECILE[0]} in the bottom income decile to ${AVG_IMPACT_BY_DECILE[-1]} in the top decile.
 
-<iframe src="{GITHUB_PAGES_BASE_URL}/avg-benefit-by-decile.html" width="100%" height="650" frameborder="0"></iframe>
+<iframe src="{GITHUB_PAGES_BASE_URL}/avg-benefit-by-decile.html" title="Figure 3: Average benefit of Utah SB60 by income decile" width="100%" height="650" frameborder="0"></iframe>
 
 We project that SB60 would have no effect on poverty or deep poverty while raising the state's Gini index of inequality by {GINI_IMPACT_PCT}%.
 
@@ -207,6 +307,37 @@ We invite you to explore our [additional analyses](https://www.policyengine.org/
 with open("output/utah-sb60-income-tax-reduction.md", "w") as f:
     f.write(markdown)
 print("Generated output/utah-sb60-income-tax-reduction.md")
+
+# Generate robots.txt for GitHub Pages
+print("Generating robots.txt...")
+robots_txt = f"""User-agent: *
+Allow: /
+
+Sitemap: {GITHUB_PAGES_BASE_URL}/sitemap.xml
+"""
+with open("output/robots.txt", "w") as f:
+    f.write(robots_txt)
+print("Generated output/robots.txt")
+
+# Generate sitemap.xml for GitHub Pages
+print("Generating sitemap.xml...")
+chart_filenames = ["net-income-change.html", "winners-by-decile.html", "avg-benefit-by-decile.html"]
+sitemap_urls = "\n".join(
+    f"""  <url>
+    <loc>{GITHUB_PAGES_BASE_URL}/{name}</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>"""
+    for name in chart_filenames
+)
+sitemap_xml = f"""<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+{sitemap_urls}
+</urlset>
+"""
+with open("output/sitemap.xml", "w") as f:
+    f.write(sitemap_xml)
+print("Generated output/sitemap.xml")
 
 print("\n" + "="*60)
 print("Done!")
